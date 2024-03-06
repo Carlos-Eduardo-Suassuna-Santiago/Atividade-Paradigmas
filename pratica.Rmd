@@ -1,0 +1,122 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+#exportação dos dados de um arquivo CSV
+
+```{r}
+pokemon <- read.csv("C:/Users/zackv/Área de Trabalho/Atividade/Pokemon.csv",header = T, sep = ",")
+```
+
+#Criar uma tabela de frequência
+
+```{r}
+table(pokemon$Type.1)
+```
+
+#salvar tabela de frequencia em um objeto
+
+```{r}
+tabFreq <- as.data.frame(table(pokemon$Type.1))
+```
+
+#renomear nome de colunas da tabela
+
+```{r}
+names(tabFreq) <- c("tipoPokemon","frequencia")
+```
+
+#criando gráfico de barra
+
+```{r}
+ggplot() + geom_bar(data = tabFreq, aes(x = tipoPokemon, y = frequencia), stat ="identity")
+```
+
+#gerados gráficos utilizando os conceitos já abordados até o momento sobre médias
+
+```{r}
+mean(pokemon$Attack)
+```
+
+#Código para baixar, instalar e ativar pacote
+
+```{r}
+## instalar pacotes a serem utilizados
+install.packages("plyr")
+```
+
+#ativar pacote que ser utilizado
+
+```{r}
+library(plyr)
+```
+
+#media de ataque por tipo de pokemon
+
+```{r}
+mediaAtaque <- ddply(pokemon, ~Type.1, summarise, mean = mean(Attack))
+```
+
+#gráfico com a média de ataque para cada tipo de Pokémon
+
+```{r}
+ggplot() + geom_bar(data = mediaAtaque, aes(x = Type.1, y = mean),stat = "identity") + ggtitle("Media de ataque por Tipo de pokemon")
+```
+
+#Inserindo mediaAtaque e medidaDefesa em um mesmo objeto media
+
+```{r}
+media <- cbind(mediaAtaque, mediaDefesa[,2])
+```
+
+#Alterando o nome das colunas do objeto
+
+```{r}
+names(media) <- c("tipo", "mediaAtaq","mediaDef")
+```
+
+#nstalando e habilitando pacote
+
+```{r}
+install.packages("reshape2")
+library(reshape2)
+```
+
+#transformando colunas em linhas
+
+```{r}
+mediaAtqDef <- melt(media, id = c("tipo"))
+```
+
+#Alterando nome colunas do objeto mediaAtqDef
+
+```{r}
+names(mediaAtqDef) <- c("tipo","ataq_def", "valor")
+```
+
+#grafico de barra com media de ataque e defesa por tipo de pokemon. Modelo com uma barra em cima da outra
+
+```{r}
+ggplot(data = mediaAtqDef) +geom_bar(aes(x = tipo, y = valor,fill = ataq_def), stat = "identity") +ggtitle("Media de ataque e defesa por Tipo de pokemon")
+```
+
+#grafico de barra com media de ataque e defesa por tipo de pokemon. Modelo com uma barra ao lado da outra
+
+```{r}
+ggplot(data = mediaAtqDef) + geom_bar(aes(x = tipo, y = valor,fill = ataq_def), stat = "identity",position=position_dodge()) + ggtitle("Media de ataque e defesa por Tipo de pokemon")
+```
+
+#media de defesa por tipo de pokemon
+
+```{r}
+mediaDefesa <- ddply(pokemon, ~Type.1, summarise, mean = mean(Defense))
+```
+
+#grafico para média de defesa por tipo de pokemon
+
+```{r}
+ggplot(data = mediaDefesa) + geom_bar(aes(x = Type.1, y = mean), stat = "identity") + ggtitle("Media de defesa por Tipo de pokemon")
+```
